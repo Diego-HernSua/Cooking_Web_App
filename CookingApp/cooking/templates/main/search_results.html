@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="main-content">
+        <section class="search-results-section">
+            <h2>Search Results for "{{ ingredient }}"</h2>
+
+            {% if results %}
+                <ul>
+                    {% for recipe in results %}
+                        <li>
+                            <strong>{{ recipe.title }}</strong>
+                            <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}">View Recipe</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No recipes found with the ingredient "{{ ingredient }}".</p>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

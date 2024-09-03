@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>My profile</h1>
+    <div class="user-details-container">
+        <div class="user-details">
+            <p><b>Name:</b> {{ user.name }}</p>
+            <p><b>Email:</b> {{ user.email }}</p>
+        </div>
+    </div>
+
+    <!--COMPLETE RECIPES-->
+    <div class="types-of-recipe">
+        <div class="recipe-section">
+            <h3>Recipes by {{ user.name }} <small>(complete recipes)</small></h3>
+            {% if user.recipes|selectattr('finished', 'equalto', true)|list %}
+                {% for recipe in user.recipes if recipe.finished %}
+                    {% include 'user_recipes_template.html' %}
+                {% endfor %}
+            {% else %}
+                <p>I do not have complete recipes available.</p>
+            {% endif %}
+        </div>  
+    
+
+        <!--INCOMPLETE RECIPES-->
+        <div class="recipe-section">
+            <h3>Incomplete recipes (add ingredients and steps)</h3>
+            {% if user.recipes|selectattr('finished', 'equalto', false)|list %}
+                {% for recipe in user.recipes if not recipe.finished %}
+                    {% include 'user_recipes_template.html' %}
+                {% endfor %}
+            {% else %}
+                <p>I do not have incomplete recipes available.</p>
+            {% endif %}
+        </div>
+    
+
+        <!--SAVED RECIPES-->
+        <div class="recipe-section">
+            <h3>Saved recipes</h3>
+            {% if user.bookmarks %}
+                {% for bookmark in user.bookmarks %}
+                    <div class ="recipe" id="saved-recipe">
+                        <p><a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe_id) }}">{{bookmark.recipe.title}}</a></p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>I have not saved any recipe yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!--PHOTOS UPLOADED-->
+    <h3>Photos uploaded by {{user.name}}</h3>
+    {% if user.photos %}
+        <div class="recipes-user-photo">
+            {% for photo in user.photos %}
+                    <div class="recipe-user-photo">
+                        <div class="photo-user">
+                            <a href="{{ url_for('main.recipe', recipe_id=photo.recipe.id) }}"> 
+                                <img src="{{ url_for('static', filename='photos/photo-' ~ photo.id ~ '.' ~ photo.extension) }}" alt="User photo">
+                            </a>
+
+                        </div>
+                    </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>I have not uploaded photos for recipes.</p>
+    {% endif %}
+
+
+{% endblock %}

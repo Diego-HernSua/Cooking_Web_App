@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action="{{ url_for('main.search') }}" method="GET" class="search-form">
+        <datalist id="suggested_ingredients">
+            {% for ingredient in ingredients %}
+                <option value="{{ ingredient.name }}">
+            {% endfor %}
+        </datalist>
+
+        <div class="search-container">
+            <input type="text" id="ingredient" name="ingredient" list="suggested_ingredients" placeholder="Search Recipe by Ingredient" required>
+            <button type="submit"><img src="{{ url_for('static', filename='search-icon.png') }}" alt="Search"></button>
+        </div>
+    </form>
+
+
+    <section>
+        <h2 class="titleimp">Recipes</h2>
+        {% include 'recipes_template.html' %}
+    </section>
+    
+
+{% endblock %}
+
+

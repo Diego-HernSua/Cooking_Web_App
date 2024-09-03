@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!--The form to fill in when you want to log in. It requires an email and a password-->
+    <form class = "auth_form" action="{{ url_for('auth.login') }}" method="post">
+        <h2>Log in</h2>
+        <div><label>Email: <input type="email" name="email" required/></label></div>
+        <div><label>Password: <input type="password" name="password" required/></label></div>
+        <div><input type="submit" value="Log in"/></div>
+
+        <!--If you are in the log in page and you do not have an account, and you click over "Sign up"
+        you are directed (by the url_for) to the sign up page-->
+        <p class="sign-up">Don't have an account? <a class="sign-up" href="{{ url_for('auth.signup') }}">Sign up</a></p>
+
+        <!--Show flashed messages to inform about errors-->
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="notification">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+    </form>
+
+{% endblock %}

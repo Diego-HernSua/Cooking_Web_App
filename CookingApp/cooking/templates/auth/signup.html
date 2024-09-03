@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <!--The form to fill in when you want to sign up. It requires an email, a user name,
+    a password and repeating the password-->
+    <form class = "auth_form" action="{{ url_for('auth.signup') }}" method="post">
+        <h2>Sign Up</h2>
+        <div><label>Email: <input type="email" name="email" required/></label></div>
+        <div><label>User name: <input type="text" name="username" required/></label></div>
+        <div><label>Password: <input type="password" name="password" required/></label></div>
+        <div><label>Repeat password: <input type="password" name="password_repeat" required/></label></div>
+        <div><input type="submit" value="Sign Up"/></div>
+
+        <!--Show flashed messages to inform about errors-->
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="notification">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+    </form>
+
+{% endblock %}

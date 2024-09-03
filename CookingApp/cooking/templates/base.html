@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>CookingTok</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <header>
+            <div class="logo-container">
+                <h1><a href="{{ url_for('main.index') }}" class="cookingtok">CookingTok</a></h1>
+                <a href="{{ url_for('main.index') }}" class="logo-link">
+                    <img src="{{ url_for('static', filename='argui.png') }}" alt="Cooking Logo" class="logo">
+                </a>
+            </div>
+            
+            <h3><a href="{{ url_for('main.index') }}" class="menu">Home Page</a></h3>
+            <h3><a href="{{ url_for('main.creating_recipe') }}" class="menu">Create a recipe</a></h3>
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.my_profile', user_id=current_user.id) }}" class="user-info user-circle ">
+                    <img src="{{ url_for('static', filename='user-icon.png') }}" alt="User Icon" class="user-icon">
+                    <span>{{ current_user.name }}</span>
+                </a>
+
+                <a href="{{ url_for('auth.logout') }}" class="login-logout-button">Log out</a>
+
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="login-logout-button">Log in</a>
+            {% endif %}
+
+        </header>
+        
+        <section class="content">
+            {% block content %}{% endblock %}
+        </section>
+
+        <footer><small>Any issues please contact us</small></footer>
+    </body>
+</html>
+
+

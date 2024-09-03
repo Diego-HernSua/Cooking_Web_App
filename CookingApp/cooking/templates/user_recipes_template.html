@@ -1,0 +1,16 @@
+<div class="recipe">
+    <div class="title">
+        {% if on_my_profile %}
+        
+            {% if recipe.finished %}
+                <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}" class="title-recipe">{{ recipe.title }}</a>
+            {% else %}
+                <a href="{{ url_for('main.finishing_recipe', recipe_id=recipe.id) }}" class="title-recipe">{{ recipe.title }}</a>
+            {% endif %}
+
+        {% else %}
+            <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}" class="title-recipe">{{ recipe.title }}</a>
+        {% endif %}
+
+    </div>
+</div>

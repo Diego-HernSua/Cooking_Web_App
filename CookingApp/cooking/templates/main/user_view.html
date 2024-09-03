@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!--USER DETAILS-->
+    <h2>User {{user.name}}</h2>
+    <div class="user-details-container">
+        <div class="user-details">
+            <p><b>Name:</b> {{ user.name }}</p>
+            <p><b>Email:</b> {{ user.email }}</p>
+        </div>
+    </div>
+
+    <!--RECIPES CREATED BY THE USER-->
+    <h3>Recipes by {{ user.name }}</h3>
+    {% if user.recipes %}
+            <div class="recipes">
+                {% for recipe in user.recipes if recipe.finished %}
+                    {% include 'user_recipes_template.html' %}
+                {% endfor %}
+            </div>
+    {% else %}
+        <p>There are no recipes available for this user.</p>
+    {% endif %}
+    
+    <!--PHOTOS UPLOADED BY THE USER-->
+    <h3>Photos uploaded by {{user.name}}</h3>
+    {% if user.photos %}
+        <div class="recipes-user-photo">
+            {% for photo in user.photos %}
+                <div class="recipe-user-photo">
+                    <div class="photo-user">
+                        <a href="{{ url_for('main.recipe', recipe_id=photo.recipe.id) }}"> 
+                            <img src="{{ url_for('static', filename='photos/photo-' ~ photo.id ~ '.' ~ photo.extension) }}" alt="User photo">
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>This user has not uploaded photos for recipes.</p>
+    {% endif %}
+
+{% endblock %}
+
+

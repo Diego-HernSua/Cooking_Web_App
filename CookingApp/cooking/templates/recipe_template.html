@@ -1,0 +1,31 @@
+<div class="recipe">
+    {% if recipe.photos %}
+        <div class="photo">
+            {% set first_photo = recipe.photos[0] %}
+            <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}" class="title-recipe">
+                <img src="{{ url_for('static', filename='photos/photo-' ~ first_photo.id ~ '.' ~ first_photo.extension) }}" alt="photo"></a>
+        </div>
+    {% else %}
+        <div class="photo">
+            <!-- Display a default image if no photos are available -->
+            <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}" class="title-recipe">
+                <img src="{{ url_for('static', filename='default-photo.png') }}" alt="default photo"></a>
+        </div>
+    {% endif %}
+
+    <div class="title">
+        <a href="{{ url_for('main.recipe', recipe_id=recipe.id) }}" class="title-recipe">{{ recipe.title }}</a>
+    </div>
+
+    <div class="user">
+        <a href="{{ url_for('main.user', user_id=recipe.user.id) }}" class="user-recipe">{{ recipe.user.name }}</a>
+    </div>
+</div>
+
+    
+ 
+
+
+
+
+

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>Add ingredients and steps for this recipe</h2>
+    <div class="user-details-container">
+        <div class="user-details">
+            <p><b>Title:</b> {{ selected_recipe.title }}</p>
+            <p><b>General description:</b> {{ selected_recipe.description }}</p>
+            <p><b>Number of people:</b> {{ selected_recipe.n_people }}</p>
+            <p><b>Cooking time (minutes):</b> {{ selected_recipe.cooking_time }}</p>
+        </div>
+    </div>
+
+    <div class="recipeFormContainer">
+        <form class="recipeForm" action="{{ url_for('main.finishing_recipe', recipe_id=selected_recipe.id) }}" method="post">
+            <div id="recipeContainer">
+
+                <h2>Ingredients:</h2>
+                <div id="ingredientContainer">
+
+                    <!--Datalist for suggested ingredients (the ones in the database)-->
+                    <datalist id="suggested_ingredients">
+                        {% for ingredient in ingredients %}
+                            <option value="{{ ingredient.name }}">
+                        {% endfor %}
+                    </datalist>
+
+                    <div class="ingredient-form">
+                        <label for="ingredientName">Ingredient:</label>
+                        <input type="text" class="ingredientName" name="ingredientName[]" list="suggested_ingredients" required>
+                        
+                        <label for="quantity">Quantity:</label>
+                        <input type="text" class="quantity" name="quantity[]" required>
+
+                        <label for="unit">Units:</label>
+                        <input type="text" class="unit" name="unit[]" required>
+                        
+                        <button type="button" onclick="removeIngredient(this)">Remove</button>
+                    </div>
+
+                    <div class="ingredient-form">
+                        <label for="ingredientName">Ingredient:</label>
+                        <input type="text" class="ingredientName" name="ingredientName[]" list="suggested_ingredients" required>
+                        
+                        <label for="quantity">Quantity:</label>
+                        <input type="text" class="quantity" name="quantity[]" required>
+
+                        <label for="unit">Units:</label>
+                        <input type="text" class="unit" name="unit[]" required>
+                        
+                        <button type="button" onclick="removeIngredient(this)">Remove</button>
+                    </div>
+
+                    <div class="ingredient-form">
+                        <label for="ingredientName">Ingredient:</label>
+                        <input type="text" class="ingredientName" name="ingredientName[]" list="suggested_ingredients" required>
+                        
+                        <label for="quantity">Quantity:</label>
+                        <input type="text" class="quantity" name="quantity[]" required>
+
+                        <label for="unit">Units:</label>
+                        <input type="text" class="unit" name="unit[]" required>
+                        
+                        <button type="button" onclick="removeIngredient(this)">Remove</button>
+                    </div>
+
+                </div>
+                <button type="button" onclick="addIngredient()">Add New Ingredient</button>
+
+                <h2>Steps:</h2>
+                <div id="stepContainer">
+
+                    <div class="step-form" draggable="true" ondragstart="startDrag(event)">
+                        <div class="number-circle">1</div>
+
+                            <label for="stepDescription">Step:</label>
+                            <textarea class="stepDescription" name="stepDescription[]" rows="3" required></textarea>
+                            
+                            <button type="button" onclick="removeStep(this)">Remove</button>
+                    </div>
+
+                    <div class="step-form" draggable="true" ondragstart="startDrag(event)">
+                        <div class="number-circle">2</div>
+                            <label for="stepDescription">Step:</label>
+                            <textarea class="stepDescription" name="stepDescription[]" rows="3" required></textarea>
+                            
+                            <button type="button" onclick="removeStep(this)">Remove</button>
+                    </div>
+                </div>
+                <button type="button" onclick="addStep()">Add New Step</button>
+
+            </div>
+            <button type="submit">Submit Recipe</button>
+        </form>
+    </div>
+
+    <script>
+        let draggedItem =null;
+
+        function addIngredient() {
+            const container = document.getElementById('ingredientContainer');
+            const newIngredientForm = document.createElement('div');
+            newIngredientForm.className = 'ingredient-form';
+    
+            newIngredientForm.innerHTML = `
+                <label for="ingredientName">Ingredient:</label>
+                <input type="text" class="ingredientName" name="ingredientName[]" list="suggested_ingredients" required >
+                
+                <label for="quantity">Quantity:</label>
+                <input type="text" class="quantity" name="quantity[]" required>
+                
+                <label for="unit">Units:</label>
+                <input type="text" class="unit" name="unit[]" required>
+
+                <button type="button" onclick="removeIngredient(this)">Remove</button>
+            `;
+    
+            container.appendChild(newIngredientForm);
+        }
+    
+        function removeIngredient(button) {
+            const container = document.getElementById('ingredientContainer');
+            const ingredientForm = button.parentNode;
+            container.removeChild(ingredientForm);
+        }
+
+        
+
+        function addStep() {
+            const container = document.getElementById('stepContainer');
+            const newStepForm = document.createElement('div');
+            newStepForm.className = 'step-form';
+            newStepForm.draggable = true;
+            newStepForm.ondragstart = function (event) {
+                startDrag(event);
+            };
+
+            const stepNumber = container.children.length + 1;
+
+            newStepForm.innerHTML = `
+                <div class="number-circle">${stepNumber}</div>
+                <label for="stepDescription">Step:</label>
+                <textarea class="stepDescription" name="stepDescription[]" rows="3" required></textarea>
+                
+                <button type="button" onclick="removeStep(this)">Remove</button>
+            `;
+
+            container.appendChild(newStepForm);
+        }
+
+        function removeStep(button) {
+            const container = document.getElementById('stepContainer');
+            const stepForm = button.parentNode;
+            container.removeChild(stepForm);
+            updateStepNumbers();
+        }
+
+        function updateStepNumbers() {
+            const container = document.getElementById('stepContainer');
+            const forms = container.querySelectorAll('.step-form');
+            forms.forEach((form, index) => {
+                const numberCircle = form.querySelector('.number-circle');
+                numberCircle.textContent = index + 1;
+            });
+        }
+
+        function startDrag(e) {
+            draggedItem = e.target.closest('.step-form');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', draggedItem.innerHTML);
+        }
+
+        function handleDragEnter(e) {
+            if (draggedItem !== null && e.target.classList.contains('step-form')) {
+                e.target.style.borderTop = '2px solid #000';
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('step-form')) {
+                e.target.style.borderTop = '';
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            if (draggedItem !== null) {
+                e.preventDefault();
+                const container = document.getElementById('stepContainer');
+                const targetItem = e.target.closest('.step-form');
+                container.insertBefore(draggedItem, targetItem);
+                draggedItem = null;
+
+                // Reset styles
+                const allForms = document.querySelectorAll('.step-form');
+                allForms.forEach(form => {
+                    form.style.borderTop = '';
+                });
+
+                updateStepNumbers();
+            }
+        }
+
+        document.addEventListener('dragenter', handleDragEnter);
+        document.addEventListener('dragleave', handleDragLeave);
+        document.addEventListener('dragover', handleDragOver);
+        document.addEventListener('drop', handleDrop);
+    </script>
+
+{% endblock %}
+
+
+

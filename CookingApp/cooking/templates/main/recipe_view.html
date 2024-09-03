@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!--RECIPE TITLE AND AVERAGE RATING-->
+    <div class="recipe-header">
+        <div class="title-container">
+            <h1>{{ recipe.title }}</h1>
+            {% if current_user.is_authenticated %}
+                <form action="{{ url_for('main.bookmarks', recipe_id=recipe.id) }}" method="post">
+                    {% if bookmarked %}
+                        <input type="image" alt="Bookmark" src="{{ url_for('static', filename='bookmark-filled.png') }}" />
+                    {% else %}
+                        <input type="image" alt="Bookmark" src="{{ url_for('static', filename='bookmark-unfilled.png') }}" />
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+        {% if recipe.ratings %}
+            <p class="avg-rating"><b>Average rating {{ avg_rating }}</b></p>
+        {% endif %}
+    </div>
+
+    
+    <!--RECIPE DETAILS-->
+    <div class="recipe-details-container">
+        <div class="recipe-details">
+            <h2>RECIPE DETAILS</h2>
+            <ul class="details-list">
+                <li><span class="detail-label">User:</span><a href="{{ url_for('main.user', user_id=recipe.user.id) }}" class="orange-link">{{recipe.user.name }}</a></li>
+                <li><span class="detail-label">Description:</span>{{ recipe.description }}</li>
+                <li><span class="detail-label">Number of people:</span>{{ recipe.n_people }}</li>
+                <li><span class="detail-label">Cooking time (minutes):</span>{{ recipe.cooking_time }}</li>
+            </ul>
+
+            <h3><b>INGREDIENTS</b></h3>
+            {% for ingredient in recipe.ingredients %}
+                <p>{{ ingredient.ingredient.name }}: {{ ingredient.quantity }} {{ ingredient.unit }}</p>
+            {% endfor %}
+
+            <h3><b>STEPS</b></h3>
+            {% for step in recipe.steps %}
+                <div class="number-circle">{{ step.order }}</div>
+                <span>{{ step.description }}</span>
+                <div></div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <!-- RATINGS AND COMMENTS FOR THE RECIPE -->
+    {% if recipe.ratings or recipe.comments %}
+        <section class="ratings-comments-container">
+            <!-- SHOW THE RATINGS FOR THE RECIPE -->
+            {% if recipe.ratings %}
+                <div class="ratings-section">
+                    <p class="section-title"><b>SOME USER RATINGS</b></p>
+                    <ul class="user-ratings">
+                        {% for rating in recipe.ratings %}
+                            <li><b>{{ rating.user.name }}:</b> {{ rating.value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        
+            <!-- SHOW THE COMMENTS FOR THE RECIPE -->
+            {% if recipe.comments %}
+                <div class="comments-section">
+                    <p class="section-title"><b>SOME USER COMMENTS</b></p>
+                    <ul class="user-comments">
+                        {% for comment in recipe.comments %}
+                            <li class="comment-user">{{ comment.user.name }}</li>
+                            <li class="comment-description">Comment: {{ comment.description }}</li>
+                            <p class="comment-timestamp">Published date: {{ comment.timestamp }}</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </section>
+    {% endif %}
+
+
+    <!-- DISPLAY PHOTOS OF THE RECIPE-->
+    {% if recipe.photos %}
+        <h2 class="photo-title">Some photos of the recipe</h2>
+        <div class="recipes">
+            {% for photo in recipe.photos %}
+                <div class="recipe-user-photo">
+                    <div class="photo-user">
+                        <b><p>Photo done by: <a href="{{ url_for('main.user', user_id=photo.user.id) }}" class="orange-link">{{ photo.user.name }}</a></p></b>
+
+                        <a href="{{ url_for('main.recipe', recipe_id=photo.recipe.id) }}">
+                            <img src="{{ url_for('static', filename='photos/photo-' ~ photo.id ~ '.' ~ photo.extension) }}" alt="photo">
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <!--RATE THE RECIPE AND SUBMIT A PHOTO-->
+    <div class="form-container">
+        <!--RATE THE RECIPE-->
+        {% if current_user.is_authenticated %}
+            <div class="rating-comment-form">
+                <p><b>Do you want to rate this recipe?</b></p>  
+                <form action="{{ url_for('main.ratings', recipe_id=recipe.id) }}" method="post">
+                    <label for="rating">Select a rating:</label>
+                    <select id="rating" name="rating">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <div><input type="submit" value="Submit rating"/></div>
+                </form>
+
+                <form action="{{ url_for('main.comments', recipe_id=recipe.id) }}" method="post" >
+                    <div><label><textarea name="description" rows="6" required placeholder="Add your comment"></textarea></label></div>
+                    <div><input type="submit" value="Add comment"/></div>
+                </form>
+            </div>
+        {% endif %}
+
+        <!--SUBMIT A PHOTO FOR THE RECIPE-->
+        {% if current_user.is_authenticated %}
+            <div class="photo-form">
+                <p><b>Do you want to add a photo of this recipe?</b></p>
+                <form action="{{ url_for('main.upload_photo') }}" method="post" enctype="multipart/form-data">
+                    <div><input type="file" name="photo" accept="image/jpeg,image/png" required></div>
+                    <div><input type="hidden" name="recipe_id" value="{{recipe.id}}"></div>
+                    <div><input type="submit" value="Submit photo"/></div>
+                </form>
+
+                <!--Show flashed messages to inform about errors-->
+                {% with messages = get_flashed_messages() %}
+                    {% for message in messages %}
+                        <div class="notification">{{ message }}</div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+        {% endif %}
+
+        
+    </div>
+    
+    <!--OTHER RECIPES BY THE USER OF THE ACTUAL RECIPE-->
+    <h2 class="photo-user-title">Recipes by {{ recipe.user.name }}</h2>
+    {% if recipe.user.recipes %}
+            <div class="recipes">
+                {% for recipe in recipe.user.recipes if recipe.finished %}
+                    {% include 'user_recipes_template.html' %}
+                {% endfor %}
+            </div>
+    {% else %}
+        <p>There are no recipes available for this user.</p>
+    {% endif %}
+
+{% endblock %}
+

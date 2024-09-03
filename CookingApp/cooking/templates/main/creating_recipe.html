@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="recipe-sections">
+        <!--Two sections in order to separate the content. One section is for the form to create the recipe
+        and aanother is to display the unfinished recipes-->
+        <section class="recipe-form custom-section" >
+
+            <h2>Create a recipe</h2>
+            <!--The form to fill in when you want to create a recipe. Fill in with the title, a
+            general description, the number of people and the cooking time of the recipe-->
+            <form action="{{ url_for('main.creating_recipe') }}" method="post" class="recipe-form">
+                <div><label>Title: <input type="text" name="title" required/></label></div>
+                <div><label>General description:<textarea name="description" rows="4"></textarea></label></div>
+                <div><label>Number of people: <input type="number" name="number_people" required/></label></div>
+                <div><label>Cooking time (minutes): <input type="number" name="cooking_time" required/></label></div>
+                <div><input type="submit" value="Create the recipe"/></div>
+            </form>
+
+        </section>
+
+        <section class="unfinished-recipes custom-section">
+            <!--The unfinished recipes are shown (the ones without steps and ingredients)
+            The user can select one unfinished recipe and he can complete it. The user will be directed
+            to another page in which the information of the recipe is shown and where he can add ingredients
+            and steps-->
+
+            <h2>Incomplete recipes</h2>
+            <h3>Choose a recipe to complete (add ingredients and steps)</h3>
+
+            {% if unfinished_recipes %}
+                <ul class="recipe-list">
+                    {% for recipe in unfinished_recipes %}
+                        <li>
+                            <a href="{{ url_for('main.finishing_recipe', recipe_id=recipe.id) }}" class="recipe-link">
+                                {{ recipe.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No incomplete recipes available.</p>
+            {% endif %}
+        </section>
+    </div>
+
+{% endblock %}
