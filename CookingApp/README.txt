@@ -5,11 +5,11 @@ WEB APPLICATIONS PROJECT - [ COOKINGTOK ]
 
 AUTHORS:
 
-Francisco José Landa Ortega - NIA: 100483174 
+Francisco José Landa Ortega
 
-Teresa Gener López - NIA: 100472787 
+Teresa Gener López
 
-Diego Hernández Suárez - NIA: 100472809
+Diego Hernández Suárez
 
 -----------------------------------------------------------------------------
 
